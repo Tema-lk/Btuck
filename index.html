@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#1F3D2B">
+<title>Tuck Shop Ledger</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="install-banner" id="installBanner">
+  <span>Install this on the home screen so it works offline.</span>
+  <button id="installBtn">Install</button>
+</div>
+
+<div class="topbar">
+  <div class="shop-name" id="shopNameDisplay">Tuck Shop</div>
+  <div class="today-date" id="todayDate"></div>
+</div>
+
+<main>
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <section class="screen active" id="screen-dashboard">
+    <h2 class="section-title">Today</h2>
+    <div class="card">
+      <div class="hero-label">Total profit today</div>
+      <div class="hero-number" id="heroProfit">P0.00</div>
+      <div class="hero-label" id="heroBreakdown">Stock P0.00 &middot; Mobile money P0.00</div>
+    </div>
+
+    <div class="card-row">
+      <div class="card">
+        <div class="stat-label">Cash in hand</div>
+        <div class="stat-value" id="cashInHandVal">P0.00</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">E-float</div>
+        <div class="stat-value gold" id="eFloatVal">P0.00</div>
+      </div>
+    </div>
+
+    <div id="lowFloatWarning"></div>
+
+    <div class="fab-row">
+      <button class="btn btn-primary" data-open-modal="modalSell">Log sale</button>
+      <button class="btn btn-gold" data-open-modal="modalMoney">Mobile money</button>
+    </div>
+
+    <h2 class="section-title">Low stock</h2>
+    <div class="card" id="lowStockCard">
+      <div class="empty-state">Nothing low yet.</div>
+    </div>
+
+    <h2 class="section-title">Recent activity</h2>
+    <div class="card" id="recentActivityCard">
+      <div class="empty-state">No activity yet today.</div>
+    </div>
+  </section>
+
+  <!-- ===================== STOCK ===================== -->
+  <section class="screen" id="screen-stock">
+    <div class="fab-row">
+      <button class="btn btn-primary" data-open-modal="modalAddProduct">Add product</button>
+    </div>
+    <h2 class="section-title">Products</h2>
+    <div class="card" id="productListCard">
+      <div class="empty-state">No products yet. Add your first one.</div>
+    </div>
+  </section>
+
+  <!-- ===================== MOBILE MONEY ===================== -->
+  <section class="screen" id="screen-money">
+    <div class="card-row">
+      <div class="card">
+        <div class="stat-label">Cash in hand</div>
+        <div class="stat-value" id="mmCashVal">P0.00</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">E-float</div>
+        <div class="stat-value gold" id="mmFloatVal">P0.00</div>
+      </div>
+    </div>
+    <div class="fab-row">
+      <button class="btn btn-primary" data-open-modal="modalMoney">Cash-in / Cash-out</button>
+    </div>
+    <div class="fab-row">
+      <button class="btn btn-outline" data-open-modal="modalDeposit">Record ATM / branch deposit</button>
+    </div>
+    <h2 class="section-title">Mobile money activity</h2>
+    <div class="card" id="mmActivityCard">
+      <div class="empty-state">No mobile money activity yet.</div>
+    </div>
+  </section>
+
+  <!-- ===================== EXPENSES ===================== -->
+  <section class="screen" id="screen-expenses">
+    <div class="fab-row">
+      <button class="btn btn-primary" data-open-modal="modalExpense">Add expense</button>
+    </div>
+    <h2 class="section-title">Expenses</h2>
+    <div class="card" id="expenseListCard">
+      <div class="empty-state">No expenses logged yet.</div>
+    </div>
+  </section>
+
+  <!-- ===================== REPORTS ===================== -->
+  <section class="screen" id="screen-reports">
+    <div class="toggle-group" id="reportRangeToggle">
+      <button data-range="today" class="active">Today</button>
+      <button data-range="week">This week</button>
+      <button data-range="month">This month</button>
+    </div>
+
+    <div class="card">
+      <div class="hero-label">Total profit</div>
+      <div class="hero-number" id="repTotalProfit">P0.00</div>
+    </div>
+
+    <div class="card">
+      <div class="list-row"><div class="primary">Stock revenue</div><div class="amount" id="repRevenue">P0.00</div></div>
+      <div class="list-row"><div class="primary">Cost of goods sold</div><div class="amount negative" id="repCogs">P0.00</div></div>
+      <div class="list-row"><div class="primary">Stock profit</div><div class="amount positive" id="repStockProfit">P0.00</div></div>
+      <div class="list-row"><div class="primary">Mobile money commission</div><div class="amount positive" id="repCommission">P0.00</div></div>
+      <div class="list-row"><div class="primary">Expenses</div><div class="amount negative" id="repExpenses">P0.00</div></div>
+    </div>
+
+    <h2 class="section-title">Best sellers</h2>
+    <div class="card" id="repBestSellers">
+      <div class="empty-state">No sales in this period yet.</div>
+    </div>
+  </section>
+
+  <!-- ===================== SETTINGS ===================== -->
+  <section class="screen" id="screen-settings">
+    <h2 class="section-title">Shop</h2>
+    <div class="card">
+      <div class="field">
+        <label for="shopNameInput">Shop name</label>
+        <input type="text" id="shopNameInput" placeholder="e.g. Mma Kabo's Tuck Shop">
+      </div>
+      <button class="btn btn-outline" id="saveShopNameBtn">Save</button>
+    </div>
+
+    <h2 class="section-title">Opening balances</h2>
+    <div class="card">
+      <div class="field">
+        <label for="setCashInput">Cash in hand</label>
+        <input type="number" id="setCashInput" step="0.01" min="0">
+      </div>
+      <div class="field">
+        <label for="setFloatInput">E-float</label>
+        <input type="number" id="setFloatInput" step="0.01" min="0">
+      </div>
+      <button class="btn btn-outline" id="saveBalancesBtn">Update balances</button>
+    </div>
+
+    <h2 class="section-title">Mobile money commission table</h2>
+    <div class="note">These numbers are placeholders based on an example post, not confirmed agent rates. Edit them here as soon as you have the real commission sheet &mdash; no coding needed.</div>
+    <div class="card">
+      <div class="bracket-head"><div>Min (P)</div><div>Max (P)</div><div>Cash-in fee</div><div></div></div>
+      <div id="cashinBracketList"></div>
+      <button class="btn btn-outline" id="addCashinBracket" style="margin-top:6px;">Add cash-in bracket</button>
+    </div>
+    <div class="card">
+      <div class="bracket-head"><div>Min (P)</div><div>Max (P)</div><div>Cash-out fee</div><div></div></div>
+      <div id="cashoutBracketList"></div>
+      <button class="btn btn-outline" id="addCashoutBracket" style="margin-top:6px;">Add cash-out bracket</button>
+    </div>
+
+    <h2 class="section-title">Data</h2>
+    <div class="card">
+      <button class="btn btn-outline" id="exportBtn" style="margin-bottom:10px;">Export all data (backup)</button>
+      <button class="btn btn-danger-outline" id="resetBtn">Reset all data</button>
+    </div>
+  </section>
+
+</main>
+
+<nav class="tabbar">
+  <button class="tab-btn active" data-screen="dashboard">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>
+    Home
+  </button>
+  <button class="tab-btn" data-screen="stock">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l1.5-3h15L21 7M3 7v12a1 1 0 001 1h16a1 1 0 001-1V7M3 7h18M9 11a3 3 0 006 0"/></svg>
+    Stock
+  </button>
+  <button class="tab-btn" data-screen="money">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5c0-1.2 1.1-2 2.5-2s2.5.8 2.5 2c0 2.5-5 1.5-5 4 0 1.2 1.1 2 2.5 2s2.5-.8 2.5-2"/></svg>
+    Money
+  </button>
+  <button class="tab-btn" data-screen="expenses">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h5"/></svg>
+    Expenses
+  </button>
+  <button class="tab-btn" data-screen="reports">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>
+    Reports
+  </button>
+  <button class="tab-btn" data-screen="settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.6V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.6-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.6-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.6V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.6 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.6 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.6 1z"/></svg>
+    Settings
+  </button>
+</nav>
+
+<!-- ===================== MODALS ===================== -->
+
+<div class="modal-overlay" id="modalAddProduct">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>Add product</h3><button class="modal-close" data-close-modal>&times;</button></div>
+    <div class="field"><label for="pName">Product name</label><input type="text" id="pName"></div>
+    <div class="field"><label for="pCost">Cost price (P, per unit)</label><input type="number" id="pCost" step="0.01" min="0"></div>
+    <div class="field"><label for="pPrice">Sell price (P, per unit)</label><input type="number" id="pPrice" step="0.01" min="0"></div>
+    <div class="field"><label for="pStock">Starting stock quantity</label><input type="number" id="pStock" step="1" min="0"></div>
+    <div class="field"><label for="pLow">Low-stock warning below</label><input type="number" id="pLow" step="1" min="0" value="5"></div>
+    <button class="btn btn-primary" id="saveProductBtn">Save product</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalSell">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>Log a sale</h3><button class="modal-close" data-close-modal>&times;</button></div>
+    <div class="field">
+      <label for="sellProduct">Product</label>
+      <select id="sellProduct"></select>
+    </div>
+    <div class="field"><label for="sellQty">Quantity</label><input type="number" id="sellQty" step="1" min="1" value="1"></div>
+    <div class="card" id="sellPreview" style="margin-bottom:14px;"></div>
+    <button class="btn btn-primary" id="confirmSellBtn">Confirm sale</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalRestock">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3 id="restockTitle">Restock</h3><button class="modal-close" data-close-modal>&times;</button></div>
+    <div class="field"><label for="restockQty">Add quantity</label><input type="number" id="restockQty" step="1" min="1" value="1"></div>
+    <button class="btn btn-primary" id="confirmRestockBtn">Add stock</button>
+    <button class="btn btn-danger-outline" id="deleteProductBtn" style="margin-top:10px;">Delete this product</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalMoney">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>Mobile money transaction</h3><button class="modal-close" data-close-modal>&times;</button></div>
+    <div class="toggle-group" id="moneyTypeToggle">
+      <button data-type="cashin" class="active">Cash-in</button>
+      <button data-type="cashout">Cash-out</button>
+    </div>
+    <div class="field"><label for="moneyAmount">Amount customer is transacting (P)</label><input type="number" id="moneyAmount" step="0.01" min="0"></div>
+    <div class="card" id="moneyPreview" style="margin-bottom:14px;"></div>
+    <button class="btn btn-primary" id="confirmMoneyBtn">Confirm</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalDeposit">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>ATM / branch deposit</h3><button class="modal-close" data-close-modal>&times;</button></div>
+    <div class="note">This moves cash from the counter into your e-float. It is not an expense and not income &mdash; it's your own money changing form.</div>
+    <div class="field"><label for="depositAmount">Amount deposited (P)</label><input type="number" id="depositAmount" step="0.01" min="0"></div>
+    <button class="btn btn-primary" id="confirmDepositBtn">Record deposit</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalExpense">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>Add expense</h3><button class="modal-close" data-close-modal>&times;</button></div>
+    <div class="field">
+      <label for="expCategory">Category</label>
+      <select id="expCategory">
+        <option>Restocking</option>
+        <option>Rent</option>
+        <option>Transport</option>
+        <option>Electricity</option>
+        <option>Wages</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="field"><label for="expAmount">Amount (P)</label><input type="number" id="expAmount" step="0.01" min="0"></div>
+    <div class="field"><label for="expNote">Note (optional)</label><input type="text" id="expNote"></div>
+    <button class="btn btn-primary" id="confirmExpenseBtn">Save expense</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/dexie@3/dist/dexie.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
